@@ -26,7 +26,7 @@
 
 	set odbcdriver unicode
 	odbc list
-	global db  "DRIVER={SQL Server};SERVER=wfpromsqlp02;DATABASE=MONITORING;UID=monitor_usr_ro ;PWD=M0n1R015;"
+	global db  "DRIVER={SQL Server};SERVER=wfpromsqlp02;DATABASE=MONITORING;UID=monitor_usr_ro ;PWD=.....;"
 	
 	odbc load, exec("SELECT * FROM grf_adminunits") conn("$db") clear
 	rename ADM0_CODE ADM0_ID
