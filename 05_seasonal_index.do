@@ -7,10 +7,10 @@
 			  lucia.latino@wfp.org
 			  Latino@Economia.uniroma2.it
                     
+		    
      AIM: compute the seasonal index of the cost of the food basket
 	 
-     This version: May 19, 2016
-
+  
 ----------------------------------------------------------------------------- */
 
 
@@ -19,7 +19,9 @@
 	set more off
 	
 	use $path/output/basket.dta, replace
-		
+
+	egen data=max(t)
+	gen last_data= string(data, "%tmMonth_ccyy")
 	
 ***** Seasonal index based on monthly price - LOG CMA PROCEDURE (Ittig, 2004)
 	gen month=month(time)
@@ -78,9 +80,9 @@
 	
 	egen keep=tag(adm0_id month)
 	
-	keep if keep | Notes!=""
+	keep if keep | Notes!="no price data available"
 
-	keep adm0_name adm0_id month gsi avg_kcal_share Notes
+	keep adm0_name adm0_id month gsi basket_kcal_share Notes last_data
 	
 	sort adm0_name month 
 	
