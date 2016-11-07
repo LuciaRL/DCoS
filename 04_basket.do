@@ -22,7 +22,7 @@
 			
 	gen price_g=price/1000
 	
-	drop if price_g==. & Notes=="no price data available"
+	drop if price_g==. & Notes!="no price data available"
 	
 	gen total_cal=2100
 		
@@ -38,7 +38,7 @@
 	gen cost=qt*price_g*30.5
 	label var cost "national currency/person/month for cm_name"
 	
-	drop if cost==. & Notes=="no price data available"
+	drop if cost==. & Notes!="no price data available"
 		
 *** find the minimum calorie content for the food basket of each country
 	* NOTE: time cut off should be changed by x month forward when updated is done in next x months
@@ -168,7 +168,7 @@ restore
 	
 	egen keep=tag(adm0_id time) if food_basket!=. 
 	
-	keep if keep | Notes!="no price data available"
+	keep if keep | Notes=="no price data available"
 	
 	keep adm0_name adm0_id t* food_basket cur* basket_kcal_share Notes
 		
