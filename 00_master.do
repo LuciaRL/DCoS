@@ -16,7 +16,7 @@
 
 
 *	Clear environment and set Stata working parameters
-	clear
+	clear all
 	set more off
 	set max_memory ., perm
 	set matsize 1000, perm
@@ -25,7 +25,7 @@
 * Set folder path
 
 	if c(username)=="lucia.latino"{
-		global path "C:\Users\lucia.latino\Documents\SFE\data"		
+		global path "C:\Users\lucia.latino\Documents\2.Market_team\SFE\data"		
 		}
 
 		else {
@@ -51,64 +51,57 @@ cd $path
 
 
 /*-------------------------------------------------
-
-	01_data.do
+	01_vam.do
 	
-	AIM:  - get data for the estimation 
-			of the cost of food basket 
-	note: lines to be checked are about ad hoc fixies (lines 116-125)
-	
+	AIM:  - get data for the estimation of the cost of food basket from vam db
+	note: lines to be checked are about ad hoc fixies (lines 114-122)
+		and the date for the label of GIEWS dataset (line 408)
 --------------------------------------------------*/
+	do 01_vam.do	
 
-	do 01_data.do	
-
+/*-----------------------------------------------------------------------------
+	02_giews.do
+	
+	AIM:  - get data for the estimation of the cost of food basket from giews
+	note: line to be checked is about the date for dataset's label (line 217)
+-----------------------------------------------------------------------------*/
+	do 02_giews.do	
 
 /*-------------------------------------------------
-
-	02_cleaning.do
+	03_cleaning.do
 	
-	AIM:  - clean price series and 
-			generate national average
-		note: lines to be checked are 129-130 and 143
+	AIM:  - merge datasets, clean price series, generate national average and 
+			run 03b_priority.do (AIM: set  priority for price series within 
+			the same fao_fct_name)
+	note: lines to be checked are 67, 71, 107-108, 124, 241.
+		If line 241 is not needed to generate exceptions, then code lines 240-455 
+		in 03b_priority.do are not needed
 --------------------------------------------------*/
-
-	do 02_cleaning.do	
+	do 03_cleaning.do	
 	
-
 /*-------------------------------------------------
-
-	03_basket.do
+	04_basket.do
 	
 	AIM:  - compute the cost of food basket 
-		note: lines to be checked are 26 and in loops 51-108
-
+		note: lines to be checked are loops 51-100
 --------------------------------------------------*/
-
-	do 03_basket.do	
-	
+	do 04_basket.do	
 	
 /*-------------------------------------------------
-
-	04_seasonal_index.do
+	05_seasonal_index.do
 	
 	AIM:  - compute the seasonal index for the
 			cost of food basket 
-	
 --------------------------------------------------*/
-
-	do 04_seasonal_index.do	
-	
+	do 05_seasonal_index.do	
 	
 /*-------------------------------------------------
-
-	05_SFE.do
+	06_SFE.do
 	
 	AIM:  - build the monthly and 
 		the forward-looking score
-	
 --------------------------------------------------*/
-
-	do 05_SFE.do	
+	do 06_SFE.do	
 		
 	
 * Great! You made it!
