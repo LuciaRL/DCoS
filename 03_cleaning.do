@@ -17,7 +17,7 @@
 
 *** Clear environment 
 	clear
-1	set more off
+	set more off
 	set maxvar 20000	
 	
 *** get country-specific commodity caloric contribution for a diet of 2010 kcal/person/day
