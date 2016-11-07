@@ -40,7 +40,7 @@
 	
 	xtset adm0_id t
 		
-	levelsof adm0_id if Notes=="", local (country) 
+	levelsof adm0_id if Notes!="no price data available", local (country) 
 	foreach c of numlist `country' {
 		sort t
 		tempvar ma1
@@ -80,7 +80,7 @@
 	
 	egen keep=tag(adm0_id month)
 	
-	keep if keep | Notes!="no price data available"
+	keep if keep | Notes=="no price data available"
 
 	keep adm0_name adm0_id month gsi basket_kcal_share Notes last_data
 	
