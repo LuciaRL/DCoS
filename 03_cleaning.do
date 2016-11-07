@@ -79,7 +79,7 @@
 	
 *** convert all VAM prices to kg price
 	merge m:m ext_data adm0_id cm_id pt um_name cur_id using $path\input\list_master, ///
-	keepusing (cm_kcal_100g fao_fct_name um_factor_to_kg fao_fct_kcalshare)
+	keepusing (cm_kcal_100g fao_fct_name um_factor_to_kg refuse fao_fct_kcalshare)
 	
 	capture assert _merge!=1 | Notes=="no price data available"
 	if _rc==0 {
