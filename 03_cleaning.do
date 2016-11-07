@@ -251,7 +251,7 @@
 	egen 	series_m`j' = max(d`j'), by (series)
 	}
 	egen 	series_m   = rowtotal(series_m*)
-	drop if series_m   <12 & Notes=="no price data available"
+	drop if series_m   <12 & Notes!="no price data available"
 	drop series data_count date_start date_end month_cover	
 		
 *******************************	
