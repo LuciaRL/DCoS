@@ -55,7 +55,7 @@
 	replace SFES=4 if SG_SFE>2*windth2 & SG_SFE<=3*windth2 & SG_SFE!=.
 	replace SFES=5 if SG_SFE>3*windth2 & SG_SFE<=4*windth2 & SG_SFE!=.
 
-	keep adm0* month SFE SFES windth avg_kcal_share Notes
+	keep adm0* month SFE SFES windth basket_kcal_share Notes last_d
 	
 	gen  Month="Jan" if month==1 
 	replace  Month="Feb" if  month==2
@@ -77,6 +77,7 @@
 	
 	merge 1:m adm0_id using `temp'
 
+*** export scores in excel 
 preserve
 	drop SFES month adm0_* _merg
 	replace Month="Jan" if Month==""
@@ -86,25 +87,32 @@ preserve
 	rename country Country
 
 	replace Notes="data requirements not met" if Jan==. & Notes==""
-	replace Notes="food basket accounts only for 30-40% of daily caloric intake" if avg_kcal_share<40 & Jan!=.
-	replace Notes="food basket accounts only for 20-30% of daily caloric intake" if avg_kcal_share<30 & Jan!=.
-	replace Notes="food basket accounts only for 10-20% of daily caloric intake" if avg_kcal_share<20 & Jan!=.
-	replace Notes="food basket accounts only for 5-10% of daily caloric intake" if avg_kcal_share<10 & Jan!=.
-	replace Notes="food basket accounts only for less than 5% of caloric intake" if avg_kcal_share<5 & Jan!=.
-	drop avg
-	
+	replace Notes="food basket accounts only for 30-40% of daily caloric intake" if basket_kcal_share<40 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 20-30% of daily caloric intake" if basket_kcal_share<30 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 10-20% of daily caloric intake" if basket_kcal_share<20 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 5-10% of daily caloric intake" if basket_kcal_share<10 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for less than 5% of caloric intake" if basket_kcal_share<5 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 30-40% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<40 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for 20-30% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<30 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for 10-20% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<20 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for 5-10% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<10 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for less than 5% of caloric intake and series shorter than 5 years" if basket_kcal_share<5 & Jan!=. & Notes=="series shorter than 5 years"
+
+	drop basket_kcal_share
+
 	order Country Jan Fe Mar Ap May Jun Jul Au S O Nov D Not
 
-	export excel using $path/output/SFE.xlsx, sheet("SFE") sheetreplace firstrow(varia) cell(A6)
+	export excel Country Jan-Dec Notes using $path/output/SFE.xlsx, sheet("SFE") sheetreplace firstrow(varia) cell(A7)
 	putexcel set $path/output/SFE.xlsx, sheet("SFE") modify
-	putexcel (A6:N6), bold hcenter vcenter font(Calibri, 11, darkblue) 
-	putexcel (A6:A120), bold  font(Calibri, 11)	
-	putexcel (N7:N120), font(Calibri, 9)
-	putexcel (B7:M120), nformat(number)
+	putexcel (A7:N7), bold hcenter vcenter font(Calibri, 11, darkblue) 
+	putexcel (A7:A120), bold  font(Calibri, 11)	
+	putexcel (N8:N120), font(Calibri, 8)
+	putexcel (B8:M120), nformat(number)
 	putexcel A1="WFP - VAM/Economic and Market Analysis Unit", bold  vcenter font(Calibri, 14, blue)
 	putexcel A2="Seasonal Food Expenditure Score", bold  vcenter font(Calibri, 11, darkblue)
 	local today=c(current_date)
-	putexcel A3="last update: `today'", italic font(Calibri, 11)
+	local data=last_data[1]
+	putexcel A3="last update: `today' --- last prices used are from `data'" , italic font(Calibri, 11)
 	putexcel P11="SFE", bold hcenter vcenter font(Calibri, 11, darkblue)
 	putexcel p12=1
 	putexcel p13=2
@@ -123,7 +131,7 @@ preserve
 	putexcel r14=2*windth*100
 	putexcel r15=3*windth*100
 	putexcel r16=4*windth*100
-	putexcel (O1:O120)=""
+
 restore
 
 preserve
@@ -136,24 +144,28 @@ preserve
 	rename country Country
 
 	replace Notes="data requirements not met" if Jan==. & Notes==""
-	replace Notes="price series shorter than 3 years" if Country=="Iraq" | Country=="Timor-Leste"
-	replace Notes="food basket accounts only for 30-40% of daily caloric intake" if avg_kcal_share<40 & Jan!=.
-	replace Notes="food basket accounts only for 20-30% of daily caloric intake" if avg_kcal_share<30 & Jan!=.
-	replace Notes="food basket accounts only for 10-20% of daily caloric intake" if avg_kcal_share<20 & Jan!=.
-	replace Notes="food basket accounts only for 5-10% of daily caloric intake" if avg_kcal_share<10 & Jan!=.
-	replace Notes="food basket accounts only for less than 5% of caloric intake" if avg_kcal_share<5 & Jan!=.
-	drop avg
+	replace Notes="food basket accounts only for 30-40% of daily caloric intake" if basket_kcal_share<40 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 20-30% of daily caloric intake" if basket_kcal_share<30 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 10-20% of daily caloric intake" if basket_kcal_share<20 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 5-10% of daily caloric intake" if basket_kcal_share<10 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for less than 5% of caloric intake" if basket_kcal_share<5 & Jan!=. & Notes==""
+	replace Notes="food basket accounts only for 30-40% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<40 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for 20-30% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<30 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for 10-20% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<20 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for 5-10% of daily caloric intake and series shorter than 5 years" if basket_kcal_share<10 & Jan!=. & Notes=="series shorter than 5 years"
+	replace Notes="food basket accounts only for less than 5% of caloric intake and series shorter than 5 years" if basket_kcal_share<5 & Jan!=. & Notes=="series shorter than 5 years"
+	drop basket_kcal_share
 	
-	export excel using $path/output/SFE.xlsx, sheet("SFES") sheetreplace firstrow(varia) cell(A6)
+	export excel Country Jan-Dec Notes using $path/output/SFE.xlsx, sheet("SFES") sheetreplace firstrow(varia) cell(A7)
 	putexcel set $path/output/SFE.xlsx, sheet("SFES") modify
-	putexcel (A6:N6), bold hcenter vcenter font(Calibri, 11, darkblue) 
-	putexcel (A6:A120), bold  font(Calibri, 11)
-	putexcel (N7:N120), font(Calibri, 9)
-	putexcel (B7:M120), nformat(number)
+	putexcel (A7:N7), bold hcenter vcenter font(Calibri, 11, darkblue) 
+	putexcel (A7:A120), bold  font(Calibri, 11)
+	putexcel (N8:N120), font(Calibri, 8)
+	putexcel (B8:M120), nformat(number)
 	putexcel A1="WFP - VAM/Economic and Market Analysis Unit", bold  vcenter font(Calibri, 14, blue)
-	putexcel A2="Severety of Seasonal Food Expenditure Score in the six upcoming six", bold  vcenter font(Calibri, 11, darkblue)
-	local today=c(current_date)
-	putexcel A3="last update: `today'", italic font(Calibri, 11)
+	putexcel A2="Severety of Seasonal Food Expenditure Score in the six upcoming months", bold  vcenter font(Calibri, 11, darkblue)
+	putexcel A3="last update: `today' --- last prices used are from `data'" , italic font(Calibri, 11)
+
 restore
 
 save $path/output/SFE.dta, replace
