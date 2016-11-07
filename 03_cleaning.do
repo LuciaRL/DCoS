@@ -141,7 +141,7 @@
 	replace data_source="mainly FAO" if comp==2 & series_wfp<series_fao
 	
 	keep year month time adm0_name adm0_id mkt_id mkt_name cm_id cm_name cm_name_FAO ///
-	cur_id cur_name pt ext_data fao_fct_name fao_fct_kcalshare cm_kcal_100g price_kg_all data_source ext Notes
+	cur_id cur_name pt ext_data fao_fct_name refuse fao_fct_kcalshare cm_kcal_100g price_kg_all data_source ext Notes
 
 ********************************	
 *	generate national  price   *
@@ -352,7 +352,8 @@
 	}
 		
 
-keep t time adm0_name adm0_id cur* pt fao_fct_name fao_fct_kcalshare cm_* pric* series priority national_p data_sour Notes
+keep t time adm0_name adm0_id cur* pt refuse fao_fct_name fao_fct_kcalshare cm_* pric* series priority national_p data_sour Notes
+
 
 save $path/output/data_all_clean.dta, replace
 
