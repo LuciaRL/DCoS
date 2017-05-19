@@ -1,5 +1,5 @@
-# SFE
-Seasonal Food Expenditure Score
+# DCoS
+Dietary Cost Severity Score
 
 Beta version
 
