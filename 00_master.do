@@ -7,10 +7,10 @@
 			  lucia.latino@wfp.org
 			  Latino@Economia.uniroma2.it
                     
-     AIM: road map for the estimation of the Seasonal Food Expenditure Score (SFE)
-		and the Severity of the Seasonal Food Expenditure Score (SFES)
+     AIM: road map for the estimation of the Dietary Cost Score (DCoS)
+		and the Dietary Cost Severity Score (DCoS2)
 	 
-     This version: July 18, 2016
+     This version: November 30, 2016
 
 ----------------------------------------------------------------------------- */
 
@@ -25,11 +25,11 @@
 * Set folder path
 
 	if c(username)=="lucia.latino"{
-		global path "C:\Users\lucia.latino\Documents\2.Market_team\SFE\data"		
+		global path "C:\Users\lucia.latino\Documents\2.Market_team\DCoS\data"
 		}
 
 		else {
-			global path "/Users/Lucia/Dropbox/WFP/market_team/SFE/data"
+			global path "/Users/Lucia/Dropbox/WFP/market_team/DCoS/data"
 			}
 *	Note: 	new dta files are always saved in the folder $path/output/
 *			original data are stored in the folder $path/input/
@@ -95,13 +95,12 @@ cd $path
 --------------------------------------------------*/
 	do 05_seasonal_index.do	
 	
-/*-------------------------------------------------
-	06_SFE.do
+/*-----------------------------------------------------------------------------
+	06_DCoS.do
 	
-	AIM:  - build the monthly and 
-		the forward-looking score
---------------------------------------------------*/
-	do 06_SFE.do	
+	AIM:  - build the monthly and the forward-looking score
+-----------------------------------------------------------------------------*/
+	do 06_DCoS.do		
 		
 	
 * Great! You made it!
