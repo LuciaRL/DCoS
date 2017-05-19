@@ -26,7 +26,7 @@
 
 	set odbcdriver unicode
 	odbc list
-	global db  "DRIVER={SQL Server};SERVER=wfpromsqlp02;DATABASE=MONITORING;UID=monitor_usr_ro ;PWD=...;"
+	global db  "DRIVER={SQL Server};SERVER=wfpromsqlp02;DATABASE=MONITORING;UID=... ;PWD=...;"
 	
 	odbc load, exec("SELECT * FROM grf_adminunits") conn("$db") clear
 	rename ADM0_CODE ADM0_ID
@@ -49,7 +49,7 @@
 	drop _merge
 
 	merge m:1 ADM0_ID mkt_id using `markets', keepusing(mkt_name)
-	assert _merge!=1 | adm0_name=="Nicaragua"  /* in 2011-12 prices for few market are reported, but the name of the markets is unknown. Markets are droppped */
+	assert _merge!=1 | adm0_name=="Nicaragua" /* in 2011-12 prices for few market are reported, but the name of the markets is unknown. Markets are droppped */
 	keep if _merge==3
 	drop _merge
 
@@ -120,9 +120,9 @@
 	replace cm_id=51 if cm_id==67 & adm0_id==180 // IT SHOULD BE CHANGED IN THE DB
 	replace cm_name="Potatoes" if adm0_id==57 & cm_name=="Potatoes (unica)"
 	replace cm_id=83 if adm0_id==57 & cm_id==213	
-	
+		
 	drop if price==0
-	
+
 * import data for Nicaragua from excel sheet prepared by Ilaria for 2010-2013 as currently it is not possibe to upload them in the db
 	drop if adm0_name=="Nicaragua" & t<tm(2014, 1)
 	tempfile db
