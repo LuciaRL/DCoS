@@ -34,19 +34,20 @@
 	
 	gen qt=qt_edible+(qt_edible*refuse)
 	label var qt "g/person/day from cm_name"
-	
+
 	gen cost=qt*price_g*30.5
 	label var cost "national currency/person/month for cm_name"
 	
-	drop if cost==. & Notes!="no price data available"
+	drop if cost==. &  Notes!="no price data available"
 		
 *** find the minimum calorie content for the food basket of each country
 	* NOTE: time cut off should be changed by x month forward when updated is done in next x months
-	bys adm0_id t: egen calorie=total(fao_fct_kcalshare) 
+	bys adm0_id t: egen calorie=total(fao_fct_kcalshare)
+	replace calorie=round(calorie, 3)
 	gen l_cal=.
 	
-levelsof adm0_id if  Notes!="no price data available", local (country)
-	foreach num of numlist `country' { 
+	levelsof adm0_id if  Notes!="no price data available", local (country)
+	foreach num of numlist `country'  {
 		local i = 1
 		while `i'<40 { // older observations are dropped to allow for a basket covering at least 40% of daily caloric intake
 			sum t if calorie==`i' & adm0_id==`num'
@@ -95,7 +96,7 @@ levelsof adm0_id if  Notes!="no price data available", local (country)
 			local min=r(min)
 		}
 	}
-	
+
 	encode fao_fct_name, gen(food_gr)
 
 *** the following group of commands avoids that there will be substitutions between commodities of different groups across time 
@@ -123,7 +124,10 @@ levelsof adm0_id if  Notes!="no price data available", local (country)
 	rename l_cal basket_kcal_share
 	label var basket_kcal_share "share of kcal per food basket"
 	
-*** obtain and save in excel food basket's details	
+*** obtain and save in excel the food basket's details
+	egen data=max(t)
+	gen last_data= string(data, "%tmMonth_ccyy")
+
 preserve
 	replace adm0_name="State of Palestine" if adm0_id==999
 	drop if food_basket==. | food_basket==0
@@ -144,8 +148,8 @@ preserve
 	replace price_type="wholesale" if pt==14
 	replace price_type="producer" if pt==17
 	replace price_type="farm gate" if pt==18
-
-	keep adm0_name cm_name fao_fct_name start_date end_date basket_kcal_share fao_fct_kcalshare national data_sour price_type Notes
+	
+	keep adm0_name cm_name fao_fct_name start_date end_date basket_kcal_share fao_fct_kcalshare national data_sour price_type Notes last_
 	rename adm0_name Country
 	rename cm_name commodity
 	rename fao_fct_name food_group
@@ -159,16 +163,35 @@ preserve
 	drop tag
 	
 	order Country basket_kcal_share commodity commodity_kcalshare price_type food_group start_date end_date Notes 
-	export excel using $path/output/SFE.xlsx, sheet("basket") sheetreplace firstrow(varia)
-	putexcel set $path/output/SFE.xlsx, sheet("basket") modify
-	putexcel (A1:P1), bold hcenter vcenter font(Calibri, 11, darkblue) 
-	putexcel (A1:A500), bold  font(Calibri, 11)	
+	export excel using $path/output/DCoS.xlsx, sheet("annex I - basket") sheetreplace firstrow(varia) cell (A7)
+	putexcel set $path/output/DCoS.xlsx, sheet("annex I - basket") modify
+	putexcel (A7:P7), bold hcenter vcenter font(Calibri, 11, darkblue) 
+	putexcel (A7:A500), bold  font(Calibri, 11)	
 	putexcel (B2:D500), nformat(number)
+	putexcel A1="WFP - VAM/Economic and Market Analysis Unit", bold  vcenter font(Calibri, 14, blue)
+	putexcel A3="Food Basket Composition", bold  vcenter font(Calibri, 11, darkblue)
+	local today=c(current_date)
+	local data=last_data[1]
+	putexcel A4="last update: `today' --- last prices used are from `data'" , italic font(Calibri, 11)
 restore	
-	
+
+** obtain data for the tableau visualization
+preserve 
+	replace adm0_name="State of Palestine" if adm0_id==999
+	duplicates drop adm0_id fao_fct_name, force
+	bys adm0_id: gen toexpand=_n == _N
+	expand 2 if toexpand
+	keep adm0_id adm0_name fao_fct_name fao_fct_kcalshare total_cal basket_kcal_share last_data 
+	egen tag=tag(adm0_id adm0_name fao_fct_name fao_fct_kcalshare total_cal basket_kcal_share last_data) 
+	replace fao_fct_name="Not available" if tag==0
+	replace fao_fct_kcalshare=100-basket_kcal_share if tag==0
+	drop tag
+	export excel using "C:\Users\lucia.latino\Documents\2.Market_team\DCoS\tableau\tableau.xlsx", sheet("basket") sheetreplace firstrow(varia)
+restore
+ 	
 	egen keep=tag(adm0_id time) if food_basket!=. 
 	
-	keep if keep | Notes=="no price data available"
+	keep if keep |  Notes=="no price data available"
 	
 	keep adm0_name adm0_id t* food_basket cur* basket_kcal_share Notes
 		
